@@ -9,10 +9,12 @@ function RegisterComponent() {
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
   const [error, setError] = useState();
+  const [loading, setLoading] = useState(false)
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
+    
     let pass;
     if (password === repeatPassword) {
         pass = password
@@ -21,19 +23,27 @@ function RegisterComponent() {
     setError('Passwords do not match');
     return; 
   }
-    
+   if (pass.length < 8) {
+    setError('Passwords should be a minimum of 8 characters');
+    return;
+  }
+    setLoading(true);
     try {
       await ApiRegister(username, email, pass);
       navigate('/login');
     } catch (error) {
       setError(error.response.data.message ?? error);
-
+    } finally {
+      setLoading(false)
     }
   };
 
   return (
     <div className="register-container">
       <h1 className="register-title">Register</h1>
+      {loading && (
+            <p style={{fontWeight: 'bold' }}>Loading...</p>
+      )}
       {error && (
           <div style={{ backgroundColor: '#f8d7da', border: '1px solid #dc3545', padding: '10px', marginBottom: '10px' }}>
             <p style={{fontWeight: 'bold', color: '#dc3545' }}>{error}</p>
