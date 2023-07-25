@@ -7,13 +7,23 @@ function RegisterComponent() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [repeatPassword, setRepeatPassword] = useState('');
   const [error, setError] = useState();
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
+    let pass;
+    if (password === repeatPassword) {
+        pass = password
+    }
+    else {
+    setError('Passwords do not match');
+    return; 
+  }
+    
     try {
-      await ApiRegister(username, email, password);
+      await ApiRegister(username, email, pass);
       navigate('/login');
     } catch (error) {
       setError(error.response.data.message ?? error);
@@ -41,6 +51,10 @@ function RegisterComponent() {
         <div>
           <label>Password:</label>
           <input className="register-input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        </div>
+         <div>
+          <label>Repeat Password:</label>
+          <input className="register-input" type="password" value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} required />
         </div>
         <button className="register-button" type="submit">Register</button>
       </form>
